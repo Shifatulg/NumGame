@@ -9,6 +9,7 @@ public class MathGame {
     private Player winner;
     private boolean gameOver;
     private Scanner scanner;
+    private Player previous;
 
     // create MathGame object
     public MathGame(Player player1, Player player2, Player player3, Scanner scanner) {
@@ -39,15 +40,18 @@ public class MathGame {
             printGameState();   // this helper method (shown below) prints the state of the Game
             System.out.println("Current player: " + currentPlayer.getName());
             boolean correct = askQuestion();  // this helper method (shown below) asks a question and returns T or F
-            currentPlayer.winStreak(correct);
             if (correct) {
                 System.out.println("Correct!");
-                currentPlayer.incrementScore();  // this increments the currentPlayer's score
+                currentPlayer.changeScore();  // this increments the currentPlayer's score
                 swapPlayers();  // this helper method (shown below) sets currentPlayer to the other Player
             } else {
                 System.out.println("INCORRECT!");
-                gameOver = true;
+                currentPlayer.changeScore();
+                swapPlayers();
+                gameOver = endGame();
+                if (endGame()) {
                 determineWinner();
+                }
             }
         }
     }
@@ -134,6 +138,7 @@ public class MathGame {
 
     // sets the winner when the game ends based on the player that missed the question
     private void determineWinner() {
+        currentPlayer.incrementStreak();
         if (currentPlayer == player1) {
             winner = player3;
         } else if (currentPlayer == player2){
@@ -141,7 +146,17 @@ public class MathGame {
         } else {
             winner = player2;
         }
+        if (winner != previous) {
+          winner.resetStreak();
+      }
+      previous = currentPlayer;
     }
 
-
+  private Boolean endGame() {
+    if (player1.getIncorrect() + player1.getIncorrect() + player1.getIncorrect() >= 2) {
+      return false;
+    } else {
+      return true;
+    }
+  }
 }
